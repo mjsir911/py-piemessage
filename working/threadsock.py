@@ -28,7 +28,9 @@ sock.listen(1)
 rec = False
 msg = True
 guid = False
+rmsg = False
 
+"""
 def check():
     global msg
     global rec
@@ -54,27 +56,36 @@ def check():
         rec = True
     else:
         return fulldata
+        """
 
 connections = {'aR' : None, 'iS' : None}
 while True:
-    #print('loop')
-    #print(msg)
     connection, client_address = sock.accept()
-    #print('message is')
-    #print(msg)
     if client_address[0] == connections['aR']:# and msg[0] != guid:
-        #check()
-        connection.send(pickle.dumps(msg))
-        connection.close()
-        #guid = msg[0]
+        if rmsg == True:
+            connection.send(pickle.dumps(msg))
+            connection.close()
+            rmsg = False
+        else:
+            connection.close()
     elif client_address[0] == connections['iS']:
-        msg = check()
-        print(msg)
+        data = True
+        fulldata = b''
+        if not rec:
+            while data:
+                data = connection.recv(16)
+                fulldata += data
+        connection.close()
+        if fulldata != b'':
+            fulldata = pickle.loads(fulldata)
+        if fulldata == 'aR' or fulldata == 'iS':
+            pass
+        msg = fulldata
+        rmsg = True
     else:
         try:
             data = connection.recv(16)
         finally:
-            #print(data)
             fulldata = pickle.loads(data)
             if fulldata == "iS":
                 connections['iS'] = client_address[0]
