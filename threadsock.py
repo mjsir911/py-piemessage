@@ -26,8 +26,8 @@ sock.listen(1)
 
 
 rec = False
-msg = True
-guid = False
+msg = [0, '', '']
+guid = 0
 
 def check():
     global msg
@@ -36,7 +36,7 @@ def check():
     fulldata = b''
     if not rec:
         while data:
-            #print('rec')
+            print('rec')
             data = connection.recv(16)
             fulldata += data
     #if rec == True and msg:
@@ -62,7 +62,7 @@ while True:
     connection, client_address = sock.accept()
     #print('message is')
     #print(msg)
-    if client_address[0] == connections['aR']:# and msg[0] != guid:
+    if client_address[0] == connections['aR'] and msg[0] != guid:
         #check()
         connection.send(pickle.dumps(msg))
         connection.close()
@@ -72,13 +72,14 @@ while True:
         print(msg)
     else:
         try:
+            print(client_address[0])
             data = connection.recv(16)
         finally:
-            #print(data)
             fulldata = pickle.loads(data)
             if fulldata == "iS":
                 connections['iS'] = client_address[0]
             elif fulldata == "aR":
                 connections['aR'] = client_address[0]
+            print(data)
             connection.close()
         print(connections)
