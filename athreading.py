@@ -20,7 +20,7 @@ __module__     = ""
 chat = 'chat.db'
 sqlrecieve = 'select * from message where not is_from_me order by date desc limit 1'
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
-address = ('localhost', 8000)
+address = ('192.168.1.7', 8000)
 
 def sqlite(db, script, arg=None):
     """ Send database sqlite script, with or without arguments for {}"""
@@ -42,6 +42,23 @@ def forwardsock(info):
         sock.send(text)
     finally:
         sock.close()
+def pendingsock():
+    forwardsock('')
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect(address)
+    fulldata = sock.recv(1024)
+    #data = True
+    #fulldata = b''
+    #while b'\x00.' not in fulldata:
+        #data = sock.recv(16)
+        #fulldata += data
+    sock.close()
+    #print(fulldata)
+    if fulldata != b'':
+        fullinfo = pickle.loads(fulldata)
+    else:
+        fullinfo = fulldata
+    return fullinfo
 
 
 class Irecieve(threading.Thread):
@@ -50,21 +67,14 @@ class Irecieve(threading.Thread):
         self.daemon = True
         self.start()
     def run(self):
-        guid = None
-        guid = open('guid', 'r').read().rstrip()
-        forwardsock('aR')
         while True:
-            recvrow = sqlite(chat, sqlrecieve)
-            tempguid = recvrow[1]
+            forwardsock('aR')
+            msg = pendingsock()
+            if msg == b'':
+                pass
+            else:
+                print(msg)
 
-            magicsend = sqlite(chat, sqlsender, tempguid)
-            self.message = (recvrow[1], recvrow[2], magicsend[1])
-
-            if guid != tempguid:
-                forwardsock(self.message)
-
-            guid = tempguid
-            open('guid', 'w').write(guid)
 
 Irecieve()
 while True:
