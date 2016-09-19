@@ -17,7 +17,8 @@ __module__     = ""
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server_address = ('localhost', 8000)
+host = socket.gethostname()
+server_address = (host, 8000)
 print('starting up on %s port %s' % server_address)
 sock.bind(server_address)
 sock.listen(1)
@@ -30,14 +31,24 @@ while True:
         #print(type(client_address))
         data = True
         fulldata = b''
-        while data:
+        while b'\x00.' not in fulldata:
             data=connection.recv(16)
             fulldata += data
+        print(fulldata)
     finally:
-        connection.close()
         #print(fulldata)
         fulldata = pickle.loads(fulldata)
+        iS = None
+        aR = None
         if fulldata == "iS":
-            print(client_address[0] + ' is sending client messages')
+            iS = client_address[0]
+            #print('iS = ' + iS)
+        if fulldata == "aR":
+            aR = client_address[0]
         else:
-            print(fulldata)
+            if client_address[0] == iS:
+                print(fulldata)
+            if client_address[0] == aR:
+                    message = "THIS IS A MESSAGEEE"
+                    connection.send(pickle.dumps(message))
+        connection.close()

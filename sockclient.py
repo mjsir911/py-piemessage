@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import socket
+import pickle
 
 __appname__    = ""
 __author__     = "Marco Sirabella"
@@ -15,29 +16,26 @@ __status__     = "Prototype"  # "Prototype", "Development" or "Production"
 __module__     = ""
 
 # Create a TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect the socket to the port where the server is listening
-server_address = ('localhost', 8000)
+server_address = ('192.168.1.7', 8000)
 print('connecting to %s port %s' % server_address)
-sock.connect(server_address)
 
+#try:
+    #sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #sock.connect(server_address)
+    #sock.send(pickle.dumps('aR'))
+#finally:
+    #print('closing socket')
+    #sock.close()
 try:
-
-    # Send data
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect(server_address)
     message = 'This is the message.  It will be repeated.'
+    message = ''
     print('sending "%s"' % message)
-    sock.send(message.encode())
-
-    # Look for the response
-    amount_received = 0
-    amount_expected = len(message)
-
-    #while amount_received < amount_expected:
-    #    data = sock.recv(16)
-        #amount_received += len(data)
-        #print >>sys.stderr, 'received "%s"' % data
-
+    messagedump = pickle.dumps(message)
+    sock.send(messagedump)
 finally:
     print('closing socket')
-    sock.close()
+    #sock.close()
