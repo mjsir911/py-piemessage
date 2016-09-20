@@ -42,6 +42,7 @@ def forwardsock(info):
         sock.send(text)
     finally:
         sock.close()
+
 def pendingsock():
     forwardsock('')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -71,6 +72,7 @@ class Irecieve(threading.Thread):
             forwardsock('aR')
             msg = pendingsock()
             if msg == b'':
+                print(msg)
                 pass
             else:
                 print(msg)
