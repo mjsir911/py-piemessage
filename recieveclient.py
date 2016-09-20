@@ -14,7 +14,7 @@ __email__      = "msirabel@gmail.com"
 __status__     = "Prototype"  # "Prototype", "Development" or "Production"
 __module__     = ""
 
-address = ('192.168.1.7', 8000)
+address = ('sirabella.org', 8000)
 
 def forwardsock(info):
     text = pickle.dumps(info)
@@ -36,6 +36,5 @@ while True:
     if msg != b'':
         print(pickle.loads(msg))
     else:
-        #print(msg)
-        pass
+        print(msg)
     sock.close()

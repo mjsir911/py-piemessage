@@ -30,8 +30,7 @@ msg = True
 guid = False
 rmsg = False
 
-"""
-def check():
+"""def check():
     global msg
     global rec
     data = True
@@ -55,8 +54,18 @@ def check():
     elif fulldata == '':
         rec = True
     else:
-        return fulldata
-        """
+        return fulldata"""
+
+class ItA(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.start()
+    def run(self):
+        while True:
+            if msg:
+
+
 
 connections = {'aR' : None, 'iS' : None}
 while True:
@@ -70,13 +79,13 @@ while True:
             connection.close()
     elif client_address[0] == connections['iS']:
         data = True
-        fulldata = b''
+        fulldata = None
         if not rec:
             while data:
                 data = connection.recv(16)
                 fulldata += data
         connection.close()
-        if fulldata != b'':
+        if fulldata != None:
             fulldata = pickle.loads(fulldata)
         if fulldata == 'aR' or fulldata == 'iS':
             pass
