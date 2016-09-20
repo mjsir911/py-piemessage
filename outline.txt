@@ -1,0 +1,64 @@
+C = Client
+H = Handshake
+lguid = Last Guid
+l8r = Later Rows
+aR: android
+iS: apple
+
+
+           --------
+          /        \
+ ------- | Server | ------- C
+          \        /
+           --------
+  _           ||           _
+  |<----H---->||<----H---->|
+  |           ||           |
+db|<--lguid---||<--lguid---|something else
+  |           ||           |
+  |----l8r--->db----l8r--->|
+  X                        X
+
+Serv:
+  -->
+  | check for connections
+  | thread
+  |-|| Handshake
+  |-|| Get device info
+  |-|| if iS:
+  |-||-||| send last guuid
+  |-||-||| -->
+  |-||-|||=| receive rows(1 per conn)
+  |-||-|||=| on exit signal; break
+  |-||-|||=|-------------------------
+  |-||-||| send confirm exit signal
+  |-|| if aR:
+  |-||-||| receive guuid
+  |-||-||| -->
+  |-||-|||=| send rows(1 per conn)
+  |-||-|||=| at end of db; break
+  |-||-|||=|--------------------------
+  |-||-||| send exit signal ### We wroted something different but im not sure about that
+  |-||-||| receive exit signal
+  |-------------------------------------------
+
+:
+  -->When get message:
+  | Send handshake
+  | Receive latest guid
+  | -->
+  |=| Send next row (starting with after guid)
+  |=| @ end; break
+  |=|-----------------------------------------
+  | Send exit
+  | Receive exit
+  |----------------------
+
+C:
+  -->Every "so often":
+  | Send handshake
+  | Send latest guid
+  | Receive message row(one per conn)
+  | Send exit
+  | Receive exit
+  |------------------------------------
