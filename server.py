@@ -12,10 +12,13 @@ __email__      = "msirabel@gmail.com, dabmancer@dread.life"
 __status__     = "Prototype"
 __module__     = ""
 
-port = 77865
+port = 60000
 chat = 'chat.db'
 sqlrecieve = 'select * from message where not is_from_me order by date desc limit 1'
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
+
+import threading
+import socket
 
 def dosql(db, command, arg=None):
     """ Send database sqlite script, with or without arguments for {}"""
@@ -31,34 +34,42 @@ def dosql(db, command, arg=None):
 
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind((socket.gethostname, port))
+    sock.bind(('', port))
     sock.listen(4) #Should be changed to a different number
     while True:
-        conn, addr = socket.accept()
-        thread(conn)
+        print("starting")
+        conn, addr = sock.accept()
+        t = threading.Thread(target=stuff, args = (conn,))
+        t.start()
+        print("stopping")
 
 def client(sock, machine):
-    lguid = sock.recv(60);
+    lguid = sock.recv(60)
     print(lguid)
     contents = b"some stuff"
     sock.sendall(contents)
 
-def apple(sock, machine);
+def apple(sock, machine):
     lguid = b"1234" #call sql later
     print(None == sock.sendall(lguid))
     r = sock.recv(100000);
     print(r)
     #put r into table.
 
-class thread(threading.Thread):
-    def __init__(self, sock):
-        threading.Thread.__init__(self)
-        self.start(sock)
-    def run(self, sock):
-        handshake = sock.recv(16)
-        machine, flag = handshake.split("\n")
-        if flag==0:
-            apple(sock, machine)
-        else:
-            client(sock, machine)
-        sock.close()
+def stuff(sock):
+    print("entered socket")
+    handshake = sock.recv(16).decode()
+    print(handshake)
+    machine, flag = handshake.split("\n")
+    print("2")
+    print(flag)
+    print(flag==0)
+    if flag=="\x00":
+        apple(sock, machine)
+    else:
+        client(sock, machine)
+    print("3")
+    sock.close()
+    print("4")
+
+connect()
