@@ -34,16 +34,14 @@ def dosql(db, command, arg=None):
 
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    while True:
-        sock.connect(address)
-        sock.sendall(b"abcd\n\x00")
-        print("sent")
-        lguid = sock.recv(60);
-        print(lguid)
-        contents = b"some stuff"
-        sock.sendall(contents)
-        sock.close()
-        time.sleep(1)
+    sock.connect(address)
+    sock.sendall(b"abcd\n\x00")
+    print("sent")
+    lguid = sock.recv(60);
+    print(lguid)
+    contents = b"some stuff"
+    sock.sendall(contents)
+    sock.close()
 
 
 connect()
