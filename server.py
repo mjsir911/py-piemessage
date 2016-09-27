@@ -12,13 +12,22 @@ __email__      = "msirabel@gmail.com, dabmancer@dread.life"
 __status__     = "Prototype"
 __module__     = ""
 
-def forwardsock(info):
-    text = pickle.dumps(info)
-    sock.connect(address)
-    try:
-        sock.send(text)
-    finally:
-        sock.close()
+port = 77865
+chat = 'chat.db'
+sqlrecieve = 'select * from message where not is_from_me order by date desc limit 1'
+sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
+
+def dosql(db, command, arg=None):
+    """ Send database sqlite script, with or without arguments for {}"""
+    conn = sqlite3.connect(db)
+    if arg:
+        out = conn.execute(command.format(arg))
+    else:
+        out = conn.execute(command)
+    row = out.fetchone()
+    conn.close()
+    return row
+
 
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,11 +37,24 @@ def connect():
         conn, addr = socket.accept()
         thread(conn)
 
+def client(sock, machine):
+    lguid = sock.recv(60);
+    print(lguid)
+    contents = b"some stuff"
+    sock.sendall(contents)
+
+def apple(sock, machine);
+    lguid = b"1234" #call sql later
+    print(None == sock.sendall(lguid))
+    r = sock.recv(100000);
+    print(r)
+    #put r into table.
+
 class thread(threading.Thread):
     def __init__(self, sock):
         threading.Thread.__init__(self)
         self.start(sock)
-    def run(self sock):
+    def run(self, sock):
         handshake = sock.recv(16)
         machine, flag = handshake.split("\n")
         if flag==0:
