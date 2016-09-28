@@ -19,12 +19,12 @@ __module__      = ""
 address = ('localhost', 5350)
 
 
+lguid = '0'
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(address)
-    sock.send("{}\n".format(hex(uuid.getnode())).encode() + bytes(False))  # ik this is such BAD CODE
+    sock.send((hex(uuid.getnode()) + '\n').encode() + bytes(False))  # ik this is such BAD CODE
     print("sent")
-    lguid = 'this is my latest guid'
     sock.send(lguid.encode())
     print('sent latest guid: {}'.format(lguid))
     # contents = "latest guid +5: {}".format(lguid + '5')
