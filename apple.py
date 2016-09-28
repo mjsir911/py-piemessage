@@ -5,6 +5,7 @@ import uuid
 import socket
 import sqlite3
 import os
+import time
 
 __appname__     = "pymessage"
 __author__      = "Marco Sirabella, Owen Davies"
@@ -52,9 +53,16 @@ def connect():
 oldsize = 0
 #latestmsg = dosql(chat, sqlrecieve)
 #print('\n'.join(str(x) for x in latestmsg))
+x = 0
 while True:
     newsize = os.stat(chat + '-wal').st_size
     if newsize != oldsize:
         connect()
         #pass
     oldsize = newsize
+    time.sleep(0.2)
+    x +=1
+    if x > 300:
+        print('pinging')
+        connect()
+        x = 0
