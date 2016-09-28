@@ -58,7 +58,6 @@ def stuff(sock):
     sock.close()
 
 
-rec = ''
 def client(sock, ident):
     print('client connection')
     lguid = sock.recv(64).decode()
