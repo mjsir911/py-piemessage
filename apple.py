@@ -37,16 +37,13 @@ def dosql(db, command, arg=None):
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(address)
-    sock.send("{}\n".format(hex(uuid.getnode())).encode() + bytes(True))  # ik this is such BAD CODE
-    print("sent")
+    sock.send(hex(uuid.getnode()) + "\n").encode() + bytes(True))  # ik this is such BAD CODE
     lguid = sock.recv(64).decode()
     print('recieved ' + lguid)
-    #contents = "im sending the latest guid +5: {}".format(lguid + '5')
-    #contents = ', '.join(dosql(chat, sqlrecieve))
     latestmsg = dosql(chat, sqlrecieve)
-    #print(latestmsg)
+    print(latestmsg)
     sender = dosql(chat, sqlsender, latestmsg[1])
-    #print(sender)
+    print(sender)
     contents = '\n'.join(str(x) for x in latestmsg) + '\n' + sender[1]
     sock.send(contents.encode())
     sock.close()
