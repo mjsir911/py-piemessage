@@ -17,7 +17,6 @@ __status__     = "Prototype"
 __module__     = ""
 
 address = ('localhost', 5350)
-address = ('sirabella.org', 8000)
 
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
