@@ -34,63 +34,63 @@ def dosql(db, command, arg=None):
     return row
 
 
-def connect():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('', port))  # Interesting find, not sure best practice tho
-    sock.listen(4)  # Should be changed to a different number #But does the number DO anything??
-    while True:
-        print("starting")
-        conn, addr = sock.accept()
-        t = threading.Thread(target=stuff, args=([conn]))  # So apparently this comma is needed # Replaced with tuple to look BETTER # is a list of tuple required?
-        t.start()
-        print("Looping")
+class connect():
+    def __init__(self):
+        self.lconts = ['first string', 'second string/second line', 'third string, same line']
+        self.rec = ''
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(('', port))  # Interesting find, not sure best practice tho
+        sock.listen(4)  # Should be changed to a different number #But does the number DO anything??
+        while True:
+            print("starting")
+            conn, addr = sock.accept()
+            t = threading.Thread(target=self.stuff, args=([conn]))  # So apparently this comma is needed # Replaced with tuple to look BETTER # is a list of tuple required?
+            t.start()
+            print("Looping")
 
 
-def stuff(sock):
-    print("entered socket")
-    handshake = sock.recv(16).decode()
-    # print('handshake data: ' + handshake)
-    machine, flag = handshake.split("\n")  # I question why you named this machine
-    # print("2") # these numbers arent needed anymore probs
-    # print('flag is {}'.format(type(flag)))
-    # print('flag data is {}'.format(flag))
-    print('uuid is {}'.format(machine))
-    print('flag bool is {}'.format(flag == bytes(True).decode()))
-    if flag == bytes(True).decode():
-        apple(sock, machine)
-    else:
-        client(sock, machine)
-    # print("3")
-    sock.close()
-    # print("4")
+    def stuff(self, sock):
+        print("entered socket")
+        handshake = sock.recv(16).decode()
+        # print('handshake data: ' + handshake)
+        machine, flag = handshake.split("\n")  # I question why you named this machine
+        # print("2") # these numbers arent needed anymore probs
+        # print('flag is {}'.format(type(flag)))
+        # print('flag data is {}'.format(flag))
+        print('uuid is {}'.format(machine))
+        print('flag bool is {}'.format(flag == bytes(True).decode()))
+        if flag == bytes(True).decode():
+            self.apple(sock, machine)
+        else:
+            self.client(sock, machine)
+        # print("3")
+        sock.close()
+        # print("4")
 
 
-# We might want to make this a class cuz variables will be transferred between apple and client
-rec = ''
-def client(sock, machine):
-    print('client connection')
-    lguid = sock.recv(64).decode()
-    print('recieved guid: ' + lguid)
-    lconts = ['first string', 'second string/second line', 'third string, same line']
-    lconts.append(rec)
-    for contents in lconts:
-        sock.send(contents.encode())
-        # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
-    #contents = "nun"
-    # right now 'nun' is the closing string, stuff after it still gets sent but it closes the while loop # OUTDATED
-    #sock.send(contents.encode())
+    # We might want to make this a class cuz variables will be transferred between apple and client
+    def client(self, sock, machine):
+        print('client connection')
+        lguid = sock.recv(64).decode()
+        print('recieved guid: ' + lguid)
+        self.lconts.append(self.rec)
+        for contents in self.lconts:
+            sock.send(contents.encode())
+            # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
+        #contents = "nun"
+        # right now 'nun' is the closing string, stuff after it still gets sent but it closes the while loop # OUTDATED
+        #sock.send(contents.encode())
 
 
-def apple(sock, machine):
-    global rec
-    print('apl connection')
-    lguid = "1234"  # call sql later
-    serror = sock.send(lguid.encode())
-    # print('Any errors?: {}'.format([if serror is None]))  # Pep likes this line but it doesnt work
-    print('Any errors?: {}'.format([serror == None]))
-    rec = sock.recv(1024).decode()
-    print('Received message: "{}"'.format(rec))
-    # put r into table.
+    def apple(self, sock, machine):
+        print('apl connection')
+        lguid = "1234"  # call sql later
+        serror = sock.send(lguid.encode())
+        # print('Any errors?: {}'.format([if serror is None]))  # Pep likes this line but it doesnt work
+        print('Any errors?: {}'.format([serror == None]))
+        self.rec = sock.recv(1024).decode()
+        print('Received message: "{}"'.format(self.rec))
+        # put r into table.
 
 
 connect()
