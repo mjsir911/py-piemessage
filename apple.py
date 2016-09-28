@@ -41,7 +41,7 @@ def connect():
     print("sent")
     lguid = sock.recv(64).decode()
     print('recieved ' + lguid)
-    contents = "latest guid +5: {}".format(lguid + '5')
+    contents = "im sending the latest guid +5: {}".format(lguid + '5')
     sock.send(contents.encode())
     sock.close()
 
