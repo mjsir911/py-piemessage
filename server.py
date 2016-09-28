@@ -66,11 +66,13 @@ def stuff(sock):
 
 
 # We might want to make this a class cuz variables will be transferred between apple and client
+rec = ''
 def client(sock, machine):
     print('client connection')
     lguid = sock.recv(64).decode()
-    print('guid: ' + lguid)
+    print('recieved guid: ' + lguid)
     lconts = ['first string', 'second string/second line', 'third string, same line']
+    lconts.append(rec)
     for contents in lconts:
         sock.send(contents.encode())
         # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
@@ -80,6 +82,7 @@ def client(sock, machine):
 
 
 def apple(sock, machine):
+    global rec
     print('apl connection')
     lguid = "1234"  # call sql later
     serror = sock.send(lguid.encode())
