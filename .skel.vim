@@ -2,7 +2,7 @@
 let owen = "Owen Davies"
 let name = "Marco Sirabella"
 let nVars = {
- \"appname" : "pyMessage", 
+ \"appname" : "pymessage", 
  \"author" : name . ", " . owen,
  \"copyright" : "", 
  \"credits" : name . ", " . owen,
