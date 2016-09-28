@@ -51,7 +51,7 @@ def stuff(sock):
     print('handshake data: ' + handshake)
     ident, flag = handshake.split("\n")  # I question why you named this ident
     print('uuid is {}'.format(ident))
-    print('flag bool is {}'.format(flag == bytes(True).decode()))
+    print('flag bool is {}'.format(flag is bytes(True).decode()))
     if flag == bytes(True).decode():
         apple(sock, ident)
     else:
@@ -70,15 +70,38 @@ def client(sock, ident):
     #sock.sendall(contents.encode())
 
 
+lguid = "0"  # call sql later
 def apple(sock, ident):
-    global rec
+    global lguid
     print('apl connection')
-    lguid = "1234"  # call sql later
-    serror = sock.sendall(lguid.encode())
-    if serror != None:
-        print('Error')
-    rec = sock.recv(1024).decode()
-    print('Received message: "{}"'.format(rec))
+    print(lguid)
+    serror = sock.send(lguid.encode())
+    #print('error is {}'.format(serror))
+    if serror != None: #you scrub this isnt accurate, serror is the # of bytes sent
+        #print('Error')
+        pass
+    rec = True
+    full = ''
+    while rec:
+        rec = sock.recv(4048).decode()
+        #print(rec)
+        #print('Received message: ')# "{}"'.format(rec))
+        full += rec
+    full = full.split(chr(2))
+    full.remove(full[-1])
+    #print(full[-2])
+    #print(len(full[-2]))
+    for num, row in enumerate(full):
+        #full[full.index(m)] = m.split('yo')
+        full[num] = row.split(chr(1))
+    #print(rec)
+    #print(full[-2])
+    if full:
+        print(full[-1])
+        lguid = full[-1][1]
+        print(lguid)
+    else:
+        print('NaN')
 
 
 connect()
