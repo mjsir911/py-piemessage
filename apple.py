@@ -20,8 +20,8 @@ __module__      = ""
 
 chat = '{}/Library/Messages/chat.db'.format(os.path.expanduser("~"))
 sqlrecieve = 'select text, guid from message where not is_from_me order by date desc limit 1'
-sqlchecknull = "select text, guid from message"
-sqlcheck = sqlchecknull + " where date > (select date from message where guid = '{}')"
+sqlchecknull = "select text, guid from message where not is_from_me"
+sqlcheck = sqlchecknull + " and date > (select date from message where guid = '{}')"
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
 address = ('localhost', 5350)
 
@@ -54,8 +54,8 @@ def connect():
         #linechar = '\x12'
         #contents = [str(x) for x in msg]
         #contents = chr(1).join(msg) + chr(2)
-        contents = 'yo'.join(msg) + chr(2)
-        print(contents)
+        print(msg)
+        contents = chr(1).join(msg) + chr(2)
         sock.send(contents.encode())  # It turns out you dont need sendall you scrub
     sock.close()
 
@@ -63,7 +63,10 @@ def connect():
 oldsize = 0
 x = 0
 while True:
-    newsize = os.stat(chat + '-wal').st_size
+    try:
+        newsize = os.stat(chat + '-wal').st_size  # you were right, sometimes this file doesnt exist
+    except FileNotFoundError:
+        connect()
     if newsize != oldsize:
         connect()
         #pass
