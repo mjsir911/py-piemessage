@@ -29,9 +29,12 @@ def connect():
     print('sent latest guid: {}'.format(lguid))
     # contents = "latest guid +5: {}".format(lguid + '5')
     msg = True
+    fullmsg = ''
     while msg:
         msg = sock.recv(16).decode()  # low byte count for whatever reason
-        print('mes rec: {}'.format(msg))
+        #print('mes rec: {}'.format(msg))
+        fullmsg += msg
+    print('received message: {}'.format(fullmsg))
 
     sock.close()
 
