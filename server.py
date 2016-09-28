@@ -65,6 +65,7 @@ def stuff(sock):
     # print("4")
 
 
+# We might want to make this a class cuz variables will be transferred between apple and client
 def client(sock, machine):
     print('client connection')
     lguid = sock.recv(64).decode()
@@ -73,19 +74,19 @@ def client(sock, machine):
     for contents in lconts:
         sock.send(contents.encode())
         # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
-    contents = "nun"
-    # right now 'nun' is the closing string, stuff after it still gets sent but it closes the while loop
-    sock.send(contents.encode())
+    #contents = "nun"
+    # right now 'nun' is the closing string, stuff after it still gets sent but it closes the while loop # OUTDATED
+    #sock.send(contents.encode())
 
 
 def apple(sock, machine):
     print('apl connection')
     lguid = "1234"  # call sql later
     serror = sock.send(lguid.encode())
-    #print('Any errors?: {}'.format([if serror is None]))  #Pep likes this line but it doesnt work
+    # print('Any errors?: {}'.format([if serror is None]))  # Pep likes this line but it doesnt work
     print('Any errors?: {}'.format([serror == None]))
-    r = sock.recv(1024).decode()
-    print(r)
+    rec = sock.recv(1024).decode()
+    print('Received message: "{}"'.format(rec))
     # put r into table.
 
 
