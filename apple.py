@@ -37,7 +37,7 @@ def dosql(db, command, arg=None):
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(address)
-    sock.send(hex(uuid.getnode()) + "\n").encode() + bytes(True))
+    sock.send((hex(uuid.getnode()) + "\n").encode() + bytes(True))
     lguid = sock.recv(64).decode()
     print('recieved ' + lguid)
     latestmsg = dosql(chat, sqlrecieve)
