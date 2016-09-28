@@ -35,6 +35,7 @@ def dosql(db, command, arg=None):
 
 
 def connect():
+    print('Server booting')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', port))
     sock.listen(4)  # Should be changed to a different number
