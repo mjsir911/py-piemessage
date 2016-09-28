@@ -20,19 +20,18 @@ __module__      = ""
 
 chat = '{}/Library/Messages/chat.db'.format(os.path.expanduser("~"))
 sqlrecieve = 'select text, guid from message where not is_from_me order by date desc limit 1'
+sqlchecknull = "select text, guid from message"
+sqlcheck = sqlchecknull + " where date > (select date from message where guid = '{}')"
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
 address = ('localhost', 5350)
 
-def dosql(db, command, arg=None):
+def dosql(db, command):
     """ Send database sqlite script, with or without arguments for {}"""
     conn = sqlite3.connect(db)
-    if arg:
-        out = conn.execute(command.format(arg))
-    else:
-        out = conn.execute(command)
-    row = out.fetchone()
+    out = conn.execute(command)
+    rows = out.fetchall()
     conn.close()
-    return row
+    return rows
 
 
 def connect():
@@ -41,18 +40,27 @@ def connect():
     sock.send((hex(uuid.getnode()) + "\n").encode() + bytes(True))
     lguid = sock.recv(64).decode()
     print('recieved ' + lguid)
-    latestmsg = dosql(chat, sqlrecieve)
-    print(latestmsg)
-    sender = dosql(chat, sqlsender, latestmsg[1])
-    print(sender)
-    contents = '\n'.join(str(x) for x in latestmsg) + '\n' + sender[1]
-    sock.send(contents.encode())
+#
+    if lguid == '0':
+        rows = dosql(chat, sqlchecknull)
+    else:
+        rows = dosql(chat, sqlcheck.format(lguid))
+    for row in rows:
+        msg = list(row)  # lol
+        #print(msg)
+        msg.append(dosql(chat, sqlsender.format(msg[1]))[0][1])
+        #print(sender)
+        #splitchar = '\x11'
+        #linechar = '\x12'
+        #contents = [str(x) for x in msg]
+        #contents = chr(1).join(msg) + chr(2)
+        contents = 'yo'.join(msg) + chr(2)
+        print(contents)
+        sock.send(contents.encode())  # It turns out you dont need sendall you scrub
     sock.close()
 
 
 oldsize = 0
-#latestmsg = dosql(chat, sqlrecieve)
-#print('\n'.join(str(x) for x in latestmsg))
 x = 0
 while True:
     newsize = os.stat(chat + '-wal').st_size
