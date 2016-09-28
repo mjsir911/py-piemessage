@@ -75,26 +75,15 @@ def client(sock, machine):
         sock.send(contents.encode())
         # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
     contents = "nun"
-    sock.send(contents.encode())
-    """
-    # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
-    contents = "8765".encode()
-    sock.send(contents)
-    # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
-    contents = "4321".encode()
-    sock.sendall(contents)
     # right now 'nun' is the closing string, stuff after it still gets sent but it closes the while loop
-    contents = "nun".encode()
-    sock.sendall(contents)
-    contents = "hi".encode()
-    sock.sendall(contents)
-    """
+    sock.send(contents.encode())
 
 
 def apple(sock, machine):
     print('apl connection')
     lguid = "1234"  # call sql later
-    print('Any errors?: {}'.format(if sock.send(lguid.encode()) is None))
+    serror = sock.send(lguid.encode())
+    print('Any errors?: {}'.format(if serror is None))
     r = sock.recv(1024).decode()
     print(r)
     # put r into table.
