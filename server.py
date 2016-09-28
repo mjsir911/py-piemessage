@@ -17,7 +17,6 @@ __status__      = "Prototype"
 __module__      = ""
 
 port = 5350
-port = 8000
 chat = 'chat.db'
 sqlrecieve = 'select * from message where not is_from_me order by date desc limit 1'
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
