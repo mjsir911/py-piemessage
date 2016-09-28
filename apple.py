@@ -3,7 +3,8 @@
 
 import uuid
 import socket
-import time
+import sqlite3
+import os
 
 __appname__     = "pymessage"
 __author__      = "Marco Sirabella, Owen Davies"
@@ -16,11 +17,10 @@ __email__       = "msirabel@gmail.com, dabmancer@dread.life"
 __status__      = "Prototype"
 __module__      = ""
 
-chat = '~/Library/Messages/chat.db'
-sqlrecieve = 'select * from message where not is_from_me order by date desc limit 1'
+chat = '{}/Library/Messages/chat.db'.format(os.path.expanduser("~"))
+sqlrecieve = 'select text, guid from message where not is_from_me order by date desc limit 1'
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
 address = ('localhost', 5350)
-
 
 def dosql(db, command, arg=None):
     """ Send database sqlite script, with or without arguments for {}"""
@@ -41,9 +41,23 @@ def connect():
     print("sent")
     lguid = sock.recv(64).decode()
     print('recieved ' + lguid)
-    contents = "im sending the latest guid +5: {}".format(lguid + '5')
+    #contents = "im sending the latest guid +5: {}".format(lguid + '5')
+    #contents = ', '.join(dosql(chat, sqlrecieve))
+    latestmsg = dosql(chat, sqlrecieve)
+    #print(latestmsg)
+    sender = dosql(chat, sqlsender, latestmsg[1])
+    #print(sender)
+    contents = '\n'.join(str(x) for x in latestmsg) + '\n' + sender[1]
     sock.send(contents.encode())
     sock.close()
 
 
-connect()
+oldsize = 0
+#latestmsg = dosql(chat, sqlrecieve)
+#print('\n'.join(str(x) for x in latestmsg))
+while True:
+    newsize = os.stat(chat + '-wal').st_size
+    if newsize != oldsize:
+        connect()
+        #pass
+    oldsize = newsize
