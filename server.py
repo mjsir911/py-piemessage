@@ -49,7 +49,7 @@ def stuff(sock):
     print("entered socket")
     handshake = sock.recv(16).decode()
     print('handshake data: ' + handshake)
-    ident, flag = handshake.split("\n")  # I question why you named this ident
+    ident, flag = handshake.split("\n")
     print('uuid is {}'.format(ident))
     print('flag bool is {}'.format(flag is bytes(True).decode()))
     if flag == bytes(True).decode():
@@ -60,21 +60,28 @@ def stuff(sock):
 
 
 def client(sock, ident):
-    print('client connection')
-    lguid = sock.recv(64).decode()
-    print('recieved guid: ' + lguid)
+    #if 'lguid' not in locals():  # And this isnt any better
+    #    lguid = '0'
+    #print('client connection')
+    lguid = sock.recv(16).decode()
+    print('latest guid is {}'.format(lguid))
+    #print('recieved guid: ' + lguid)
     #lconts is a list of contenets of the server database.
-    lconts = ['first string', 'second string/second line', 'third string, same line']
-    for contents in lconts:
-        sock.sendall(contents.encode())
-    #sock.sendall(contents.encode())
+    #lconts = ['first string', 'second string/second line', 'third string, same line']
+    #for contents in lconts:
+        #sock.send(contents.encode())
+    sock.send(full)
+    #sock.send(contents.encode())
 
 
-lguid = "0"  # call sql later
+#lguid = "0"  # call sql later
 def apple(sock, ident):
-    global lguid
-    print('apl connection')
-    print(lguid)
+    global full
+    #global lguid  # I shouldnt need to do this
+    if 'lguid' not in locals():  # And this isnt any better
+        lguid = '0'
+    #print('apl connection')
+    #print(lguid)
     serror = sock.send(lguid.encode())
     #print('error is {}'.format(serror))
     if serror != None: #you scrub this isnt accurate, serror is the # of bytes sent
@@ -97,9 +104,9 @@ def apple(sock, ident):
     #print(rec)
     #print(full[-2])
     if full:
-        print(full[-1])
+        print('received "{}" from apple'.format(full[-1][0]))
         lguid = full[-1][1]
-        print(lguid)
+        #print(lguid)
     else:
         print('NaN')
 
