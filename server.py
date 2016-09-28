@@ -48,7 +48,7 @@ def connect():
 def stuff(sock):
     print("entered socket")
     handshake = sock.recv(16).decode()
-    rint('handshake data: ' + handshake)
+    print('handshake data: ' + handshake)
     ident, flag = handshake.split("\n")  # I question why you named this ident
     print('uuid is {}'.format(ident))
     print('flag bool is {}'.format(flag == bytes(True).decode()))
