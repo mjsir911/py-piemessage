@@ -5,12 +5,12 @@ import uuid
 import socket
 import time
 
-__appname__    = "pyMessage"
+__appname__    = "pymessage"
 __author__     = "Marco Sirabella, Owen Davies"
 __copyright__  = ""
 __credits__    = "Marco Sirabella, Owen Davies"
 __license__    = "new BSD 3-Clause"
-__version__    = "0.0.1"
+__version__    = "0.0.3"
 __maintainers__= "Marco Sirabella, Owen Davies"
 __email__      = "msirabel@gmail.com, dabmancer@dread.life"
 __status__     = "Prototype"

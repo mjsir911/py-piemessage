@@ -7,7 +7,7 @@ let nVars = {
  \"copyright" : "", 
  \"credits" : name . ", " . owen,
  \"license" : "new BSD 3-Clause", 
- \"version" : "0.0.1", 
+ \"version" : "0.0.3", 
  \"maintainers" : name . ", " . owen,
  \"email" : 'msirabel@gmail.com, dabmancer@dread.life', 
  \"status" : "Prototype", 
