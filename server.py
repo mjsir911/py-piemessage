@@ -36,61 +36,49 @@ def dosql(db, command, arg=None):
 
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('', port))  # Interesting find, not sure best practice tho
-    sock.listen(4)  # Should be changed to a different number #But does the number DO anything??
+    sock.bind(('', port))
+    sock.listen(4)  # Should be changed to a different number
     while True:
-        print("starting")
         conn, addr = sock.accept()
-        t = threading.Thread(target=stuff, args=([conn]))  # So apparently this comma is needed # Replaced with tuple to look BETTER # is a list of tuple required?
+        t = threading.Thread(target=stuff, args=([conn]))
         t.start()
-        print("Looping")
 
 
 def stuff(sock):
     print("entered socket")
     handshake = sock.recv(16).decode()
-    # print('handshake data: ' + handshake)
-    machine, flag = handshake.split("\n")  # I question why you named this machine
-    # print("2") # these numbers arent needed anymore probs
-    # print('flag is {}'.format(type(flag)))
-    # print('flag data is {}'.format(flag))
-    print('uuid is {}'.format(machine))
+    rint('handshake data: ' + handshake)
+    ident, flag = handshake.split("\n")  # I question why you named this ident
+    print('uuid is {}'.format(ident))
     print('flag bool is {}'.format(flag == bytes(True).decode()))
     if flag == bytes(True).decode():
-        apple(sock, machine)
+        apple(sock, ident)
     else:
-        client(sock, machine)
-    # print("3")
+        client(sock, ident)
     sock.close()
-    # print("4")
 
 
-# We might want to make this a class cuz variables will be transferred between apple and client
 rec = ''
-def client(sock, machine):
+def client(sock, ident):
     print('client connection')
     lguid = sock.recv(64).decode()
     print('recieved guid: ' + lguid)
+    #lconts is a list of contenets of the server database.
     lconts = ['first string', 'second string/second line', 'third string, same line']
-    lconts.append(rec)
     for contents in lconts:
-        sock.send(contents.encode())
-        # Ok so this is wierd, it sends the first line on its own but then it sends the rest of the lines together in one
-    #contents = "nun"
-    # right now 'nun' is the closing string, stuff after it still gets sent but it closes the while loop # OUTDATED
-    #sock.send(contents.encode())
+        sock.sendall(contents.encode())
+    #sock.sendall(contents.encode())
 
 
-def apple(sock, machine):
+def apple(sock, ident):
     global rec
     print('apl connection')
     lguid = "1234"  # call sql later
-    serror = sock.send(lguid.encode())
-    # print('Any errors?: {}'.format([if serror is None]))  # Pep likes this line but it doesnt work
-    print('Any errors?: {}'.format([serror == None]))
+    serror = sock.sendall(lguid.encode())
+    if serror != None:
+        print('Error')
     rec = sock.recv(1024).decode()
     print('Received message: "{}"'.format(rec))
-    # put r into table.
 
 
 connect()
