@@ -83,7 +83,8 @@ def apple(sock, machine):
     print('apl connection')
     lguid = "1234"  # call sql later
     serror = sock.send(lguid.encode())
-    print('Any errors?: {}'.format(if serror is None))
+    #print('Any errors?: {}'.format([if serror is None]))  #Pep likes this line but it doesnt work
+    print('Any errors?: {}'.format([serror == None]))
     r = sock.recv(1024).decode()
     print(r)
     # put r into table.
