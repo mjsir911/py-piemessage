@@ -63,10 +63,10 @@ def stuff(sock):
 
 def client(sock, machine):
     print('client connection')
-    lguid = sock.recv(60).decode()
+    lguid = sock.recv(64).decode()
     print('guid: ' + lguid)
     contents = "4321".encode()
-    sock.sendall(contents)
+    sock.send(contents)
 
 def apple(sock, machine):
     print('apl connection')
