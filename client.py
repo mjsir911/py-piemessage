@@ -31,7 +31,7 @@ def connect():
     msg = True
     while msg:
         msg = sock.recv(16).decode()  # low byte count for whatever reason
-        print('message recieved: {}'.format(msg))
+        print('mes rec: {}'.format(msg))
 
     sock.close()
 
