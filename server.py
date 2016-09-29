@@ -24,6 +24,7 @@ sqlsender = "select message.guid, chat.chat_identifier from message inner join c
 def eprint(*args, **kwargs):
     """ Print to stderr. from http://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python """
     print(*args, file=sys.stderr, **kwargs)
+#
 
 portfile = open('port', 'r')
 mport = portfile.read()
