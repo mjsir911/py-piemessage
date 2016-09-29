@@ -55,9 +55,10 @@ def connect():
     sock.connect(address)
     sock.send((hex(uuid.getnode()) + "\n").encode() + bytes(True))
     lguid = sock.recv(64).decode()
-    print('recieved ' + lguid)
+    eprint('received ' + lguid)
 #
     if lguid == '0':
+        print('Starting initial send')
         rows = dosql(chat, sqlchecknull)
     else:
         rows = dosql(chat, sqlcheck.format(lguid))
@@ -70,9 +71,11 @@ def connect():
         #linechar = '\x12'
         #contents = [str(x) for x in msg]
         #contents = chr(1).join(msg) + chr(2)
-        print(msg)
+        eprint(msg)
         contents = chr(1).join(msg) + chr(2)
         sock.send(contents.encode())  # It turns out you dont need sendall you scrub
+    if lguid == '0':
+        print('Finishing initial send')
     sock.close()
 
 
@@ -82,7 +85,7 @@ while True:
     try:
         newsize = os.stat(chat + '-wal').st_size  # you were right, sometimes this file doesnt exist
     except FileNotFoundError:
-        print('owen was right')
+        eprint('owr')  # Owen was right
         #connect()
         newsize = 1
     if newsize != oldsize:
@@ -92,6 +95,6 @@ while True:
     time.sleep(0.2)
     x +=1
     if x > 300:
-        print('pinging')
+        eprint('pinging')
         connect()
         x = 0
