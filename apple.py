@@ -5,6 +5,7 @@ import uuid
 import socket
 import sqlite3
 import os
+import sys
 import time
 
 __appname__     = "pymessage"
@@ -23,7 +24,22 @@ sqlrecieve = 'select text, guid from message where not is_from_me order by date 
 sqlchecknull = "select text, guid from message where not is_from_me"
 sqlcheck = sqlchecknull + " and date > (select date from message where guid = '{}')"
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
-address = ('localhost', 5350)
+address = ('sirabella.org', 8000)
+
+
+def eprint(*args, **kwargs):
+    """ Print to stderr. from http://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python """
+    print(*args, file=sys.stderr, **kwargs)
+
+try:
+    portfile = open('address', 'r')
+    fileconts = portfile.read()
+    port = int(fileconts.split()[1])
+    address = (fileconts.split()[0], port)
+    eprint('using port {} on address {}'.format(address[1], address[0]))
+except FileNotFoundError:
+    eprint('address file not found, booting on port {}.'.format(port))
+
 
 def dosql(db, command):
     """ Send database sqlite script, with or without arguments for {}"""
