@@ -24,14 +24,13 @@ sqlsender = "select message.guid, chat.chat_identifier from message inner join c
 def eprint(*args, **kwargs):
     """ Print to stderr. from http://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python """
     print(*args, file=sys.stderr, **kwargs)
-#
 
-portfile = open('port', 'r')
-mport = portfile.read()
-if portfile:
-    port = int(mport.split()[0])
+try:
+    portfile = open('address', 'r')
+    port = int(portfile.read().split()[1])
     eprint('using port {}'.format(port))
-
+except FileNotFoundError:
+    eprint('address file not found, booting on port {}.'.format(port))
 
 def dosql(db, command, arg=None):
     """ Send database sqlite script, with or without arguments for {}"""
