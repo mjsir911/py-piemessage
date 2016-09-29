@@ -70,16 +70,22 @@ def client(sock, ident):
     #lconts = ['first string', 'second string/second line', 'third string, same line']
     #for contents in lconts:
         #sock.send(contents.encode())
-    sock.send(full)
+    print(full[-1][0])
+    b = full[-1][0].encode()
+    sock.send(b)
     #sock.send(contents.encode())
 
 
-#lguid = "0"  # call sql later
+full = "0"
+lguid = "0"  # call sql later
 def apple(sock, ident):
-    global full
-    #global lguid  # I shouldnt need to do this
-    if 'lguid' not in locals():  # And this isnt any better
-        lguid = '0'
+    global lguid, full  # I shouldnt need to do this
+    if full:
+        oldfull = full
+    #print(locals())
+    #if 'lguid' not in locals():  # And this isnt any better
+        #lguid = '0'
+        #print('lguid not found')
     #print('apl connection')
     #print(lguid)
     serror = sock.send(lguid.encode())
@@ -108,6 +114,7 @@ def apple(sock, ident):
         lguid = full[-1][1]
         #print(lguid)
     else:
+        full = oldfull
         print('NaN')
 
 
