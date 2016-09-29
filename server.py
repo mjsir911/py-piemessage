@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 import threading
 import socket
+import sys
 
 __appname__     = "pymessage"
 __author__      = "Marco Sirabella, Owen Davies"
@@ -20,6 +20,16 @@ port = 5350
 chat = 'chat.db'
 sqlrecieve = 'select * from message where not is_from_me order by date desc limit 1'
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
+
+def eprint(*args, **kwargs):
+    """ Print to stderr. from http://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python """
+    print(*args, file=sys.stderr, **kwargs)
+
+portfile = open('port', 'r')
+mport = portfile.read()
+if portfile:
+    port = int(mport.split()[0])
+    eprint('using port {}'.format(port))
 
 
 def dosql(db, command, arg=None):
@@ -46,12 +56,12 @@ def connect():
 
 
 def stuff(sock):
-    print("entered socket")
+    eprint("entered socket")
     handshake = sock.recv(16).decode()
-    print('handshake data: ' + handshake)
+    eprint('handshake data: ' + handshake)
     ident, flag = handshake.split("\n")
-    print('uuid is {}'.format(ident))
-    print('flag bool is {}'.format(flag is bytes(True).decode()))
+    eprint('uuid is {}'.format(ident))
+    eprint('flag bool is {}'.format(flag is bytes(True).decode()))
     if flag == bytes(True).decode():
         apple(sock, ident)
     else:
@@ -64,13 +74,13 @@ def client(sock, ident):
     #    lguid = '0'
     #print('client connection')
     lguid = sock.recv(16).decode()
-    print('latest guid is {}'.format(lguid))
+    eprint('latest guid is {}'.format(lguid))
     #print('recieved guid: ' + lguid)
     #lconts is a list of contenets of the server database.
     #lconts = ['first string', 'second string/second line', 'third string, same line']
     #for contents in lconts:
         #sock.send(contents.encode())
-    print(full[-1][0])
+    eprint(full[-1][0])
     b = full[-1][0].encode()
     sock.send(b)
     #sock.send(contents.encode())
@@ -115,7 +125,7 @@ def apple(sock, ident):
         #print(lguid)
     else:
         full = oldfull
-        print('NaN')
+        eprint('NaN')
 
 
 connect()
