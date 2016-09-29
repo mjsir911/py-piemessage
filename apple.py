@@ -67,7 +67,7 @@ while True:
         newsize = os.stat(chat + '-wal').st_size  # you were right, sometimes this file doesnt exist
     except FileNotFoundError:
         print('owen was right')
-        connect()
+        #connect()
         newsize = 1
     if newsize != oldsize:
         connect()
