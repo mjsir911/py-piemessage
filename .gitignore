@@ -71,4 +71,11 @@ Session.vim
 tags
 
 # Project local files
+<<<<<<< HEAD
 address
+=======
+port
+chat.db
+chat.db-sha
+chat.db-wal
+>>>>>>> 8ec1cc7f89c5f1f43d9062b4f78f6d91f9c479e5
