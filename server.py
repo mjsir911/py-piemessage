@@ -16,10 +16,10 @@ __email__       = "msirabel@gmail.com, dabmancer@dread.life"
 __status__      = "Prototype"
 __module__      = ""
 
-port = 5350
+port = 5350 #Random Nubmer, should be changed.
 chat = 'chat.db'
-sqlrecieve = 'select * from message where not is_from_me order by date desc limit 1'
-sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
+sqlrecieve = 'SELECT * FROM message WHERE NOT is_from_me ORDER BY date DESC LIMIT 1'
+sqlsender = "SELECT message.guid, chat.chat_identifier FROM message INNER JOIN chat_message_join ON message.rowid = chat_message_join.message_id INNER JOIN chat ON chat_message_join.chat_id = chat.rowid WHERE message.guid = '{}'"
 
 def eprint(*args, **kwargs):
     """ Print to stderr. from http://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python """
@@ -51,11 +51,12 @@ def connect():
     sock.listen(4)  # Should be changed to a different number
     while True:
         conn, addr = sock.accept()
-        t = threading.Thread(target=stuff, args=([conn]))
+        # t is for thread
+        t = threading.Thread(target=t, args=([conn]))  # the second t is for the function t.
         t.start()
 
 
-def stuff(sock):
+def t(sock):
     eprint("entered socket")
     handshake = sock.recv(16).decode()
     eprint('handshake data: ' + handshake)
