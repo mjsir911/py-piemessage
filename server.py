@@ -21,16 +21,16 @@ chat = 'chat.db'
 sqlrecieve = 'SELECT * FROM message WHERE NOT is_from_me ORDER BY date DESC LIMIT 1'
 sqlsender = "SELECT message.guid, chat.chat_identifier FROM message INNER JOIN chat_message_join ON message.rowid = chat_message_join.message_id INNER JOIN chat ON chat_message_join.chat_id = chat.rowid WHERE message.guid = '{}'"
 
-def eprint(*args, **kwargs):
+def errorprint(*args, **kwargs):
     """ Print to stderr. from http://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python """
     print(*args, file=sys.stderr, **kwargs)
 
 try:
     portfile = open('address', 'r')
     port = int(portfile.read().split()[1])
-    eprint('using port {}'.format(port))
+    errorprint('using port {}'.format(port))
 except FileNotFoundError:
-    eprint('address file not found, booting on port {}.'.format(port))
+    errorprint('address file not found, booting on port {}.'.format(port))
 
 def dosql(db, command, arg=None):
     """ Send database sqlite script, with or without arguments for {}"""
@@ -44,7 +44,7 @@ def dosql(db, command, arg=None):
     return row
 
 
-def connect():
+def init():
     print('Server booting')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', port))
@@ -52,17 +52,17 @@ def connect():
     while True:
         conn, addr = sock.accept()
         # t is for thread
-        t = threading.Thread(target=t, args=([conn]))  # the second t is for the function t.
+        t = threading.Thread(target=connect, args=([conn]))  # the second t is for the function t.
         t.start()
 
 
-def t(sock):
-    eprint("entered socket")
+def connect(sock):
+    errorprint("entered socket")
     handshake = sock.recv(16).decode()
-    eprint('handshake data: ' + handshake)
+    errorprint('handshake data: ' + handshake)
     ident, flag = handshake.split("\n")
-    eprint('uuid is {}'.format(ident))
-    eprint('flag bool is {}'.format(flag is bytes(True).decode()))
+    errorprint('uuid is {}'.format(ident))
+    errorprint('flag bool is {}'.format(flag is bytes(True).decode()))
     if flag == bytes(True).decode():
         apple(sock, ident)
     else:
@@ -73,15 +73,15 @@ def t(sock):
 def client(sock, ident):
     #if 'lguid' not in locals():  # And this isnt any better
     #    lguid = '0'
-    #print('client connection')
+    #print('client connecting')
     lguid = sock.recv(16).decode()
-    eprint('latest guid is {}'.format(lguid))
+    errorprint('latest guid is {}'.format(lguid))
     #print('recieved guid: ' + lguid)
     #lconts is a list of contenets of the server database.
     #lconts = ['first string', 'second string/second line', 'third string, same line']
     #for contents in lconts:
         #sock.send(contents.encode())
-    eprint(full[-1][0])
+    errorprint(full[-1][0])
     b = full[-1][0].encode()
     sock.send(b)
     #sock.send(contents.encode())
@@ -97,7 +97,7 @@ def apple(sock, ident):
     #if 'lguid' not in locals():  # And this isnt any better
         #lguid = '0'
         #print('lguid not found')
-    #print('apl connection')
+    #print('apl inition')
     #print(lguid)
     serror = sock.send(lguid.encode())
     #print('error is {}'.format(serror))
@@ -126,7 +126,7 @@ def apple(sock, ident):
         #print(lguid)
     else:
         full = oldfull
-        eprint('NaN')
+        errorprint('NaN')
 
 
-connect()
+init()
