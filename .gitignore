@@ -72,3 +72,6 @@ tags
 
 # Project local files
 port
+chat.db
+chat.db-sha
+chat.db-wal
