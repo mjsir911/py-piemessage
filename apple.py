@@ -72,12 +72,12 @@ def connect():
         msg = list(row)  # lol
         conn = sqlite3.connect(chat)
         msg.append(conn.execute(sqlsender, [msg[1]]).fetchall()[0][1])
-        conn.close()
         eprint(msg)
         contents = chr(1).join(msg) + chr(2)
         sock.send(contents.encode())  # It turns out you dont need sendall you scrub
     if lguid == '0':
         print('Finishing initial send')
+    conn.close()
     sock.close()
 
 
