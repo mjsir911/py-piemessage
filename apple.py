@@ -22,8 +22,8 @@ __module__      = ""
 chat = '{}/Library/Messages/chat.db'.format(os.path.expanduser("~"))
 sqlrecieve = 'select text, guid from message where not is_from_me order by date desc limit 1'
 sqlchecknull = "select text, guid from message where not is_from_me"
-sqlcheck = sqlchecknull + " and date > (select date from message where guid = '{}')"
-sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '{}'"
+sqlcheck = sqlchecknull + " and date > (select date from message where guid = '?')"
+sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '?'"
 address = ('localhost', 5350)
 
 
@@ -41,10 +41,14 @@ except FileNotFoundError:
     eprint('address file not found, booting on port {}.'.format(port))
 
 
-def dosql(db, command):
+def dosql(db, command, args=None):
     """ Send database sqlite script, with or without arguments for {}"""
     conn = sqlite3.connect(db)
-    out = conn.execute(command)
+    if args:
+        out = conn.execute(command, [args])
+
+    else:
+        out = conn.execute(command)
     rows = out.fetchall()
     conn.close()
     return rows
@@ -61,11 +65,11 @@ def connect():
         print('Starting initial send')
         rows = dosql(chat, sqlchecknull)
     else:
-        rows = dosql(chat, sqlcheck.format(lguid))
+        rows = dosql(chat, sqlcheck, lguid)
     for row in rows:
         msg = list(row)  # lol
-        #print(msg)
-        msg.append(dosql(chat, sqlsender.format(msg[1]))[0][1])
+        print(msg[1])
+        msg.append(dosql(chat, sqlsender, msg[1])[0][1])
         #print(sender)
         #splitchar = '\x11'
         #linechar = '\x12'
