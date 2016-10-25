@@ -120,13 +120,13 @@ def apple(sock, ident):
         #print(rec)
         #print('Received message: ')# "{}"'.format(rec))
         full += rec
-    full = full.split(chr(2))
+    full = full.split(chr(30))
     full.remove(full[-1])
     #print(full[-2])
     #print(len(full[-2]))
     for num, row in enumerate(full):
         #full[full.index(m)] = m.split('yo')
-        full[num] = row.split(chr(1))
+        full[num] = row.split(chr(31))
     #print(rec)
     #print(full[-2])
     if full:
