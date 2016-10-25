@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import threading
 import socket
+import sqlite3
 import sys
 
 __appname__     = "pymessage"
@@ -17,7 +19,7 @@ __status__      = "Prototype"
 __module__      = ""
 
 port = 5350 #Random Nubmer, should be changed.
-chat = 'chat.db'
+localdb = 'hi.db'
 sqlrecieve = 'SELECT * FROM message WHERE NOT is_from_me ORDER BY date DESC LIMIT 1'
 sqlsender = "SELECT message.guid, chat.chat_identifier FROM message INNER JOIN chat_message_join ON message.rowid = chat_message_join.message_id INNER JOIN chat ON chat_message_join.chat_id = chat.rowid WHERE message.guid = '{}'"
 
@@ -45,6 +47,13 @@ def dosql(db, command, arg=None):
 
 
 def init():
+
+    if not os.path.exists(localdb):
+        conn = sqlite3.connect(localdb)
+        conn.execute('''create table messages(text, guid, date, sender)''')
+        conn.commit()
+        conn.close()
+
     print('Server booting')
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', port))
@@ -121,9 +130,14 @@ def apple(sock, ident):
     #print(rec)
     #print(full[-2])
     if full:
-        print('received "{}" from apple'.format(full[-1][0]))
+        #print('received "{}" from apple'.format(full[-1][0]))
         lguid = full[-1][1]
         #print(lguid)
+        conn = sqlite3.connect(localdb)
+        conn.executemany("insert into messages values (?, ?, ?, ?)", full)
+        conn.commit()
+        conn.close()
+        #print(full)
     else:
         full = oldfull
         errorprint('NaN')
