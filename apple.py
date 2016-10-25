@@ -41,8 +41,9 @@ except FileNotFoundError:
     eprint('address file not found, booting on port {}.'.format(port))
 
 
+""" this isnt needed anymore i think
 def dosql(db, command, args=None):
-    """ Send database sqlite script, with or without arguments for {}"""
+    "" Send database sqlite script, with or without arguments for {}""
     conn = sqlite3.connect(db)
     if args:
         out = conn.execute(command, [args])
@@ -52,6 +53,7 @@ def dosql(db, command, args=None):
     rows = out.fetchall()
     conn.close()
     return rows
+    """
 
 
 def connect():
@@ -74,7 +76,8 @@ def connect():
         msg.append(conn.execute(sqlsender, [msg[1]]).fetchall()[0][1])
         eprint(msg)
         contents = chr(1).join(msg) + chr(2)
-        sock.send(contents.encode())  # It turns out you dont need sendall you scrub
+        sock.send(contents.encode())
+        # It turns out you dont need sendall you scrub
     if lguid == '0':
         print('Finishing initial send')
     conn.close()
