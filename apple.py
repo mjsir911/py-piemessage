@@ -80,7 +80,9 @@ def connect():
         # It turns out you dont need sendall you scrub
     if lguid == '0':
         print('Finishing initial send')
+
     conn.close()
+
     sock.close()
 
 
@@ -88,7 +90,8 @@ oldsize = 0
 x = 0
 while True:
     try:
-        newsize = os.stat(chat + '-wal').st_size  # you were right, sometimes this file doesnt exist
+        newsize = os.stat(chat + '-wal').st_size
+        # you were right, sometimes this file doesnt exist
     except FileNotFoundError:
         eprint('owr')  # Owen was right
         #connect()
