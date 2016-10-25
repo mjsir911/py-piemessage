@@ -22,8 +22,8 @@ __module__      = ""
 chat = '{}/Library/Messages/chat.db'.format(os.path.expanduser("~"))
 sqlrecieve = 'select text, guid from message where not is_from_me order by date desc limit 1'
 sqlchecknull = "select text, guid from message where not is_from_me"
-sqlcheck = sqlchecknull + " and date > (select date from message where guid = '?')"
-sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = '?'"
+sqlcheck = sqlchecknull + " and date > (select date from message where guid = ?)"
+sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = ?"
 address = ('localhost', 5350)
 
 
@@ -68,7 +68,7 @@ def connect():
         rows = dosql(chat, sqlcheck, lguid)
     for row in rows:
         msg = list(row)  # lol
-        print(msg[1])
+        print(msg)
         msg.append(dosql(chat, sqlsender, msg[1])[0][1])
         #print(sender)
         #splitchar = '\x11'
