@@ -61,20 +61,18 @@ def connect():
     lguid = sock.recv(64).decode()
     eprint('received ' + lguid)
 #
+    conn = sqlite3.connect(chat)
     if lguid == '0':
         print('Starting initial send')
-        rows = dosql(chat, sqlchecknull)
+        rows = conn.execute(sqlchecknull).fetchall()
     else:
-        rows = dosql(chat, sqlcheck, lguid)
+        rows = conn.execute(sqlcheck, [lguid]).fetchall()
+
     for row in rows:
         msg = list(row)  # lol
-        print(msg)
-        msg.append(dosql(chat, sqlsender, msg[1])[0][1])
-        #print(sender)
-        #splitchar = '\x11'
-        #linechar = '\x12'
-        #contents = [str(x) for x in msg]
-        #contents = chr(1).join(msg) + chr(2)
+        conn = sqlite3.connect(chat)
+        msg.append(conn.execute(sqlsender, [msg[1]]).fetchall()[0][1])
+        conn.close()
         eprint(msg)
         contents = chr(1).join(msg) + chr(2)
         sock.send(contents.encode())  # It turns out you dont need sendall you scrub
