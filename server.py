@@ -72,7 +72,11 @@ def connect(sock, lguid=None):
     errorprint('handshake data: ' + handshake)
     ident, flag = handshake.split("\n")
     errorprint('uuid is {}'.format(ident))
-    errorprint('flag bool is {}'.format(flag is bytes(True).decode()))
+    if flag is bytes(True).decode():
+        device = "Apple"
+    else:
+        device = "Other"
+    errorprint('connection from {} device'.format(device))
     if flag == bytes(True).decode():
         apple(sock, ident)
     else:
@@ -108,7 +112,7 @@ def apple(sock, ident):
         lguid = str(lguid[0])
     else:
         lguid = "0"
-    print(lguid)
+    errorprint('Sending guid {}'.format(lguid))
     serror = sock.send(lguid.encode())
     if serror != None: #you scrub this isnt accurate, serror is the # of bytes sent
         pass
@@ -132,6 +136,7 @@ def apple(sock, ident):
         conn.close()
     else:
         errorprint('NaN')
+        errorprint('^ No new messages to receive ^')
 
 
 init()
