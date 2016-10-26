@@ -20,9 +20,9 @@ __status__      = "Prototype"
 __module__      = ""
 
 chat = '{}/Library/Messages/chat.db'.format(os.path.expanduser("~"))
-sqlrecieve = 'select text, guid from message where not is_from_me order by date desc limit 1'
-sqlchecknull = "select text, guid, date from message where not is_from_me"
-sqlcheck = sqlchecknull + " and date > (select date from message where guid = ?)"
+#sqlrecieve = 'select text, guid from message where not is_from_me order by date desc limit 1'
+sqlchecknull = "select text, is_from_me, guid, date from message"
+sqlcheck = sqlchecknull + " where date > (select date from message where guid = ?)"
 sqlsender = "select message.guid, chat.chat_identifier from message inner join chat_message_join on message.ROWID = chat_message_join.message_id inner join chat on chat_message_join.chat_id = chat.ROWID where message.guid = ?"
 address = ('localhost', 5350)
 
@@ -41,27 +41,11 @@ except FileNotFoundError:
     eprint('address file not found, booting on port {}.'.format(port))
 
 
-""" this isnt needed anymore i think
-def dosql(db, command, args=None):
-    "" Send database sqlite script, with or without arguments for {}""
-    conn = sqlite3.connect(db)
-    if args:
-        out = conn.execute(command, [args])
-
-    else:
-        out = conn.execute(command)
-    rows = out.fetchall()
-    conn.close()
-    return rows
-    """
-
-
 def connect():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(address)
     sock.send((hex(uuid.getnode()) + "\n").encode() + bytes(True))
     lguid = sock.recv(64).decode()
-    print(lguid)
     eprint('received ' + lguid)
 #
     conn = sqlite3.connect(chat)
@@ -73,11 +57,11 @@ def connect():
 
     for row in rows:
         msg = list(row)  # lol
-        msg[2] = str(msg[2] + 978307200)
+        msg[3] = msg[3] + 978307200
         conn = sqlite3.connect(chat)
-        msg.append(conn.execute(sqlsender, [msg[1]]).fetchall()[0][1])
-        eprint(msg)
-        contents = chr(31).join(msg) + chr(30)
+        eprint('msg is {}'.format(msg))
+        msg.append(conn.execute(sqlsender, [msg[2]]).fetchall()[0][1])
+        contents = chr(31).join(str(scol) for scol in msg) + chr(30)
         sock.send(contents.encode())
         # It turns out you dont need sendall you scrub
     if lguid == '0':
