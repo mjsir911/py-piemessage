@@ -51,7 +51,7 @@ def init():
     if not os.path.exists(localdb):
         lguid = "0"
         conn = sqlite3.connect(localdb)
-        conn.execute('''create table messages(text, guid, date, sender)''')
+        conn.execute('''create table messages(text, is_from_me, guid, date, buddy)''')
         conn.commit()
         conn.close()
 
@@ -118,10 +118,12 @@ def apple(sock, ident):
         pass
 
     rec = True
-    full = ''
+    full = b''
     while rec:
-        rec = sock.recv(4048).decode()
+        rec = sock.recv(4048)
+        #print(rec)
         full += rec
+    full = full.decode()
     full = full.split(chr(30))
     full.remove(full[-1])
 
@@ -131,7 +133,13 @@ def apple(sock, ident):
     if full:
         lguid = full[-1][1]
         conn = sqlite3.connect(localdb)
-        conn.executemany("insert into messages values (?, ?, ?, ?)", full)
+        for row in full:
+            if int(row[1]):
+                row[1] = True
+            else:
+                row[1] = False
+            print(row)
+        conn.executemany("insert into messages values (?, ?, ?, ?, ?)", full)
         conn.commit()
         conn.close()
     else:
