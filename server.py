@@ -112,18 +112,19 @@ def apple(sock, ident):
     serror = sock.send(lguid.encode())
     if serror != None: #you scrub this isnt accurate, serror is the # of bytes sent
         pass
+
     rec = True
     full = ''
     while rec:
         rec = sock.recv(4048).decode()
         full += rec
     full = full.split(chr(30))
-    print(full[-1])
     full.remove(full[-1])
+
     for num, row in enumerate(full):
         full[num] = row.split(chr(31))
+
     if full:
-        print(full)
         lguid = full[-1][1]
         conn = sqlite3.connect(localdb)
         conn.executemany("insert into messages values (?, ?, ?, ?)", full)
