@@ -61,6 +61,7 @@ def connect():
     sock.connect(address)
     sock.send((hex(uuid.getnode()) + "\n").encode() + bytes(True))
     lguid = sock.recv(64).decode()
+    print(lguid)
     eprint('received ' + lguid)
 #
     conn = sqlite3.connect(chat)
@@ -72,10 +73,11 @@ def connect():
 
     for row in rows:
         msg = list(row)  # lol
+        msg[2] = str(msg[2] + 978307200)
         conn = sqlite3.connect(chat)
         msg.append(conn.execute(sqlsender, [msg[1]]).fetchall()[0][1])
         eprint(msg)
-        contents = chr(31).join(str(rowc) for rowc in msg) + chr(30)
+        contents = chr(31).join(msg) + chr(30)
         sock.send(contents.encode())
         # It turns out you dont need sendall you scrub
     if lguid == '0':
