@@ -49,6 +49,7 @@ def dosql(db, command, arg=None):
 def init():
 
     if not os.path.exists(localdb):
+        lguid = "0"
         conn = sqlite3.connect(localdb)
         conn.execute('''create table messages(text, guid, date, sender)''')
         conn.commit()
@@ -65,7 +66,7 @@ def init():
         t.start()
 
 
-def connect(sock):
+def connect(sock, lguid=None):
     errorprint("entered socket")
     handshake = sock.recv(16).decode()
     errorprint('handshake data: ' + handshake)
@@ -96,50 +97,39 @@ def client(sock, ident):
     #sock.send(contents.encode())
 
 
-full = "0"
-lguid = "0"  # call sql later
 def apple(sock, ident):
-    global lguid, full  # I shouldnt need to do this
-    if full:
-        oldfull = full
-    #print(locals())
-    #if 'lguid' not in locals():  # And this isnt any better
-        #lguid = '0'
-        #print('lguid not found')
-    #print('apl inition')
-    #print(lguid)
+
+    """ Get the latest guid """
+    conn = sqlite3.connect(localdb)
+    getlguid = "select guid from messages order by date desc limit 1;"
+    lguid = conn.execute(getlguid).fetchone()
+
+    if lguid:
+        lguid = str(lguid[0])
+    else:
+        lguid = "0"
+    print(lguid)
     serror = sock.send(lguid.encode())
-    #print('error is {}'.format(serror))
     if serror != None: #you scrub this isnt accurate, serror is the # of bytes sent
-        #print('Error')
         pass
     rec = True
     full = ''
     while rec:
         rec = sock.recv(4048).decode()
-        #print(rec)
-        #print('Received message: ')# "{}"'.format(rec))
         full += rec
     full = full.split(chr(30))
+    print(full[-1])
     full.remove(full[-1])
-    #print(full[-2])
-    #print(len(full[-2]))
     for num, row in enumerate(full):
-        #full[full.index(m)] = m.split('yo')
         full[num] = row.split(chr(31))
-    #print(rec)
-    #print(full[-2])
     if full:
-        #print('received "{}" from apple'.format(full[-1][0]))
+        print(full)
         lguid = full[-1][1]
-        #print(lguid)
         conn = sqlite3.connect(localdb)
         conn.executemany("insert into messages values (?, ?, ?, ?)", full)
         conn.commit()
         conn.close()
-        #print(full)
     else:
-        full = oldfull
         errorprint('NaN')
 
 
